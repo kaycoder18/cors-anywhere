@@ -4,6 +4,10 @@ import requests
 
 app = Flask(__name__)
 
+@app.route('/', methods=['GET'])
+def home():
+    return "Server is running, made by Kay Dee", 200
+    
 @app.route('/add_contact', methods=['POST'])
 def add_contact():
     # Get the API key from the environment variable
