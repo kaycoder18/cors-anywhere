@@ -1,0 +1,12 @@
+# Ignore all .pyc files
+*.pyc
+
+# Ignore all __pycache__ directories in all folders
+**/__pycache__/
+
+
+# Ignore virtual environment folder
+env/
+
+# Ignore curl folder
+# curl/
