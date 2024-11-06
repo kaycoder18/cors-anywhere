@@ -8,19 +8,18 @@ app = Flask(__name__)
 # Enable CORS for all routes
 CORS(app)
 
-# CORS(app, resources={r"/add_contact": {"origins": "http://example.com"}})
-
 @app.route('/', methods=['GET'])
 def home():
     return "Server is running, made by Kay Dee", 200
 
 @app.route('/add_contact', methods=['POST'])
 def add_contact():
-    # Get the API key from the environment variable
+    # Get the API key and domain from the environment variables
     api_key = os.getenv("GETRESPONSE_API_KEY")
+    domain = os.getenv("GETRESPONSE_DOMAIN")
 
-    if not api_key:
-        return jsonify({"error": "API key not found in environment variables"}), 500
+    if not api_key or not domain:
+        return jsonify({"error": "API key or domain not found in environment variables"}), 500
 
     # Use the incoming JSON data as the payload
     payload = request.get_json()
@@ -28,11 +27,25 @@ def add_contact():
     # Set up the headers
     headers = {
         "Content-Type": "application/json",
+        "X-Domain": domain,  # Pass the domain from environment variable
         "X-Auth-Token": f"api-key {api_key}"
     }
 
+    # Construct the payload in the exact structure as your example
+    data = {
+        "name": payload.get("name", ""),
+        "campaign": {
+            "campaignId": payload.get("campaignId", "")
+        },
+        "email": payload.get("email", ""),
+        "customFieldValues": [
+            {"customFieldId": "Uv", "value": [payload.get("customValue1", "")]},
+            {"customFieldId": "U5", "value": [payload.get("customValue2", "")]}
+        ]
+    }
+
     # Send the request to the GetResponse API
-    response = requests.post('https://api.getresponse.com/v3/contacts', json=payload, headers=headers)
+    response = requests.post('https://api3.getresponse360.com/v3/contacts', json=data, headers=headers)
 
     # Check if the response is not empty
     if response.content:
