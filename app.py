@@ -8,10 +8,11 @@ app = Flask(__name__)
 # Enable CORS for all routes
 CORS(app)
 
+
 @app.route('/', methods=['GET'])
 def home():
     return "Server is running, made by Kay Dee", 200
-
+    
 @app.route('/add_contact_getresponse', methods=['POST'])
 def add_contact_getresponse():
     # Get parameters from request body
@@ -51,13 +52,19 @@ def add_contact_getresponse():
     # Send the request to the GetResponse API
     response = requests.post('https://api3.getresponse360.com/v3/contacts', json=payload, headers=headers)
 
-    print(response)
-
     # Handle response from GetResponse API
-    if response.status_code == 200:
-        return jsonify({"message": "Contact added successfully", "data": response.json()}), 200
+    if response.status_code == 202:
+        return jsonify({
+            "message": "Contact accepted for processing",
+            "data": response.json(),
+            "status_code": response.status_code
+        }), 202
     else:
-        return jsonify({"error": "Failed to add contact", "details": response.json()}), response.status_code
+        return jsonify({
+            "error": "Failed to add contact",
+            "details": response.json(),
+            "status_code": response.status_code
+        }), response.status_code
 
 if __name__ == '__main__':
     app.run(debug=True)
