@@ -50,21 +50,32 @@ def add_contact_getresponse():
     }
 
     # Send the request to the GetResponse API
-    response = requests.post('https://api3.getresponse360.com/v3/contacts', json=payload, headers=headers)
+    try:
+        response = requests.post('https://api3.getresponse360.com/v3/contacts', json=payload, headers=headers)
 
-    # Handle response from GetResponse API
-    if response.status_code == 202:
+        # Check if the response status code is 409 (Conflict)
+        if response.status_code == 409:
+            return jsonify({
+                "error": "Conflict: The contact may already exist.",
+                "details": response.text,
+                "status_code": response.status_code
+            }), 409
+
+        # Try to parse the JSON response
+        if response.content:
+            return jsonify(response.json()), response.status_code
+        else:
+            return jsonify({
+                "error": "Empty response from GetResponse API",
+                "status_code": response.status_code
+            }), response.status_code
+
+    except requests.exceptions.JSONDecodeError as e:
         return jsonify({
-            "message": "Contact accepted for processing",
-            "data": response.json(),
-            "status_code": response.status_code
-        }), 202
-    else:
-        return jsonify({
-            "error": "Failed to add contact",
-            "details": response.json(),
-            "status_code": response.status_code
-        }), response.status_code
+            "error": "Failed to decode JSON from response",
+            "details": str(e),
+            "response_text": response.text if response else "No response content"
+        }), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
