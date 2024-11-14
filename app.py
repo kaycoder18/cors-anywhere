@@ -77,5 +77,58 @@ def add_contact_getresponse():
             "response_text": response.text if response else "No response content"
         }), 500
 
+
+
+@app.route('/add_contact_sender_net', methods=['POST'])
+def add_contact_sender_net():
+    # Get parameters from request body
+    data = request.get_json()
+    email = data.get('email')
+    firstname = data.get('firstname')
+    lastname = data.get('lastname')
+
+    # Get the Bearer token from environment variables
+    bearer_token = os.getenv("SENDER_NET_BEARER_TOKEN")
+
+    if not bearer_token:
+        return jsonify({"error": "Bearer token not found in environment variables"}), 500
+
+    # Construct the payload for the sender.net API
+    payload = {
+        "email": email,
+        "firstname": firstname,
+        "lastname": lastname,
+        "groups": ["e1QDl0"],  # You can change this as per your needs
+        "trigger_automation": False
+    }
+
+    # Set up the headers
+    headers = {
+        "Authorization": f"Bearer {bearer_token}",
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    }
+
+    # Send the request to the sender.net API
+    try:
+        response = requests.post('https://api.sender.net/v2/subscribers', json=payload, headers=headers)
+
+        # Check if the response status code is 200 (OK)
+        if response.status_code == 200:
+            return jsonify(response.json()), 200
+        else:
+            return jsonify({
+                "error": f"Error: {response.status_code}",
+                "details": response.text
+            }), response.status_code
+
+    except requests.exceptions.RequestException as e:
+        return jsonify({
+            "error": "Failed to send request to sender.net API",
+            "details": str(e)
+        }), 500
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)
