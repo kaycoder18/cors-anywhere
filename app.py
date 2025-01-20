@@ -99,7 +99,7 @@ def add_contact_sender_net():
         "firstname": firstname,
         "lastname": lastname,
         "groups": ["e1QDl0"],  # You can change this as per your needs
-        "trigger_automation": False
+        "trigger_automation": True
     }
 
     # Set up the headers
