@@ -36,6 +36,7 @@ def add_contact_getresponse():
             "campaignId": "k"  # You can replace this with a dynamic campaign ID if needed
         },
         "email": email,
+        "dayOfCycle": "0",
         "customFieldValues": [
             {"customFieldId": "Uv", "value": [astrology]},  # Custom field for astrology
             {"customFieldId": "U5", "value": [date_of_birth]}  # Custom field for date of birth
