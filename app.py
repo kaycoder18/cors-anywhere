@@ -39,7 +39,9 @@ def add_contact_getresponse():
         "customFieldValues": [
             {"customFieldId": "Uv", "value": [astrology]},  # Custom field for astrology
             {"customFieldId": "U5", "value": [date_of_birth]}  # Custom field for date of birth
-        ]
+        ],
+        "dayOfAutoresponder": 0  # Setting autoresponder day to 0 for immediate trigger
+    
     }
 
     # Set up the headers
